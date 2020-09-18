@@ -66,7 +66,7 @@ yolo4_voc_weights.pth是voc数据集的权重。
 #### 1、使用预训练权重
 a、下载完库后解压，在百度网盘下载yolo4_weights.pth或者yolo4_voc_weights.pth，放入model_data，运行predict.py，输入  
 ```python
-img/street.jpg
+test_img/street.jpg
 ```
 可完成预测。  
 b、利用video.py可进行摄像头检测。  
@@ -86,7 +86,7 @@ _defaults = {
 ```
 c、运行predict.py，输入  
 ```python
-img/street.jpg
+test_img/street.jpg
 ```
 可完成预测。  
 d、利用video.py可进行摄像头检测。  

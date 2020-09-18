@@ -17,7 +17,7 @@ import matplotlib.pyplot as plt
 
 
 class DecodeBox(nn.Module):
-    """  预测结果的解码: 与 YOLO_V3 解码相同
+    """ 预测结果的解码: 与 YOLO_V3 解码相同
     由第二步我们可以获得三个特征层的预测结果，shape分别为(N,19,19,85)，(N,38,38,85)，(N,76,76,85)的数据，
     对应每个图分为19x19、38x38、76x76的网格上3个预测框的位置。但是这个预测结果并不对应着最终的预测框在图片上的位置，还需要解码才可以完成。
 
@@ -147,7 +147,8 @@ class DecodeBox(nn.Module):
         output = torch.cat((pred_boxes.view(batch_size, -1, 4) * _scale,
                             conf.view(batch_size, -1, 1), pred_cls.view(batch_size, -1, self.num_classes)), -1)
         return output.data
-        
+
+
 def letterbox_image(image, size):
     iw, ih = image.size
     w, h = size

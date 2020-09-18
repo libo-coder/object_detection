@@ -3,7 +3,6 @@
 创建YOLO类
 @author: libo
 """
-import cv2
 import numpy as np
 import colorsys
 import os
