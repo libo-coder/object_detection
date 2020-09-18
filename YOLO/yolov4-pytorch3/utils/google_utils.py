@@ -4,7 +4,6 @@
 import os
 import time
 
-
 # from google.cloud import storage
 
 
@@ -21,8 +20,7 @@ def gdrive_download(id='1HaXkef9z6y5l4vUnCYgdmEAj61c6bfWO', name='coco.zip'):
     # Attempt file download
     os.system("curl -c ./cookie -s -L \"https://drive.google.com/uc?export=download&id=%s\" > /dev/null" % id)
     if os.path.exists('cookie'):  # large file
-        s = "curl -Lb ./cookie \"https://drive.google.com/uc?export=download&confirm=`awk '/download/ {print $NF}' ./cookie`&id=%s\" -o %s" % (
-            id, name)
+        s = "curl -Lb ./cookie \"https://drive.google.com/uc?export=download&confirm=`awk '/download/ {print $NF}' ./cookie`&id=%s\" -o %s" % (id, name)
     else:  # small file
         s = "curl -s -L -o %s 'https://drive.google.com/uc?export=download&id=%s'" % (name, id)
     r = os.system(s)  # execute, capture return values

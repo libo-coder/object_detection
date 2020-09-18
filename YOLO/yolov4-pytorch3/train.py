@@ -10,14 +10,15 @@ from models import *
 from utils.datasets import *
 from utils.utils import *
 
-mixed_precision = True
-try:  # Mixed precision training https://github.com/NVIDIA/apex
-    from apex import amp
-except:
-    print('Apex recommended for faster mixed precision training: https://github.com/NVIDIA/apex')
-    mixed_precision = False  # not installed
+# mixed_precision = True
+# try:  # Mixed precision training https://github.com/NVIDIA/apex
+#     from apex import amp
+# except:
+#     print('Apex recommended for faster mixed precision training: https://github.com/NVIDIA/apex')
+#     mixed_precision = False  # not installed
+mixed_precision = False
 
-wdir = 'weights' + os.sep  # weights dir
+wdir = 'weights' + os.sep   # weights dir
 last = wdir + 'last.pt'
 best = wdir + 'best.pt'
 results_file = 'results.txt'
