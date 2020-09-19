@@ -10,7 +10,6 @@ import torch
 from torch.autograd import Variable
 import torch.nn as nn
 import torch.optim as optim
-import torch.nn.functional as F
 import torch.backends.cudnn as cudnn
 from torch.utils.data import DataLoader
 from utils.dataloader import yolo_dataset_collate, YoloDataset
@@ -106,6 +105,7 @@ def fit_ont_epoch(net, yolo_losses, epoch, epoch_size, epoch_size_val, gen, genv
                     losses.append(loss_item[0])
                 loss = sum(losses)
                 val_loss += loss
+
                 # 将loss写入tensorboard, 下面注释的是每一步都写
                 # writer.add_scalar('Val_loss',val_loss/(epoch_size_val+1), (epoch*epoch_size_val + iteration))
 
@@ -136,10 +136,7 @@ if __name__ == "__main__":
     smoooth_label = 0
     Use_Data_Loader = True      # Dataloder的使用
 
-    annotation_path = '2007_train.txt'
-    # -------------------------------#
-    #   获得先验框和类
-    # -------------------------------#
+    annotation_path = '2020_train.txt'
     anchors_path = 'model_data/yolo_anchors.txt'
     classes_path = 'model_data/voc_classes.txt'
     class_names = get_classes(classes_path)
@@ -148,7 +145,8 @@ if __name__ == "__main__":
 
     # 创建模型
     model = YoloBody(len(anchors[0]), num_classes)
-    model_path = "model_data/yolo4_weights.pth"
+    # model_path = "model_data/yolo4_weights.pth"
+    model_path = "E:/project/yolo_model/yolov4-pytorch/yolo4_weights.pth"       # yolov4 的预训练模型
 
     # 加快模型训练的效率
     print('Loading weights into state dict...')
@@ -214,9 +212,8 @@ if __name__ == "__main__":
 
         epoch_size = max(1, num_train // Batch_size)
         epoch_size_val = num_val // Batch_size
-        # ------------------------------------#
+
         #   冻结一定部分训练
-        # ------------------------------------#
         for param in model.backbone.parameters():
             param.requires_grad = False
 
@@ -249,9 +246,8 @@ if __name__ == "__main__":
 
         epoch_size = max(1, num_train // Batch_size)
         epoch_size_val = num_val // Batch_size
-        # ------------------------------------#
+
         #   解冻后训练
-        # ------------------------------------#
         for param in model.backbone.parameters():
             param.requires_grad = True
 
