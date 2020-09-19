@@ -12,7 +12,6 @@ import torch.nn as nn
 import math
 from collections import OrderedDict
 
-
 class Mish(nn.Module):
     """ MISH激活函数 """
     def __init__(self):
@@ -79,7 +78,6 @@ class Resblock_body(nn.Module):
         else:
             self.split_conv0 = BasicConv(out_channels, out_channels//2, 1)
             self.split_conv1 = BasicConv(out_channels, out_channels//2, 1)
-
             self.blocks_conv = nn.Sequential(
                 *[Resblock(out_channels//2) for _ in range(num_blocks)],
                 BasicConv(out_channels//2, out_channels//2, 1)
@@ -98,6 +96,7 @@ class Resblock_body(nn.Module):
         x = self.concat_conv(x)
 
         return x
+
 
 class CSPDarkNet(nn.Module):
     """
@@ -130,7 +129,6 @@ class CSPDarkNet(nn.Module):
                 m.weight.data.fill_(1)
                 m.bias.data.zero_()
 
-
     def forward(self, x):
         x = self.conv1(x)
 
@@ -143,6 +141,7 @@ class CSPDarkNet(nn.Module):
         out5 = self.stages[4](out4)
 
         return out3, out4, out5
+
 
 def darknet53(pretrained, **kwargs):
     model = CSPDarkNet([1, 2, 8, 8, 4])

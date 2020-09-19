@@ -157,8 +157,8 @@ class YoloDataset(Dataset):
             x[:, :, 1:][x[:, :, 1:] > 1] = 1
             x[x < 0] = 0
             image = cv2.cvtColor(x, cv2.COLOR_HSV2RGB)  # numpy array, 0 to 1
-
             image = Image.fromarray((image * 255).astype(np.uint8))
+
             # 将图片进行放置，分别对应四张分割图片的位置
             dx = place_x[index]
             dy = place_y[index]

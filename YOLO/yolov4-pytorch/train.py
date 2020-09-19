@@ -17,7 +17,7 @@ from nets.yolo_training import YOLOLoss, Generator
 from nets.yolo4 import YoloBody
 from tqdm import tqdm
 
-########### 获得类和先验框 ############
+############# 获得类 ##############
 def get_classes(classes_path):
     """ loads the classes """
     with open(classes_path) as f:
@@ -26,6 +26,7 @@ def get_classes(classes_path):
     return class_names
 
 
+########### 获得先验框 ############
 def get_anchors(anchors_path):
     """ loads the anchors from a file """
     with open(anchors_path) as f:
@@ -57,7 +58,7 @@ def fit_one_epoch(net, yolo_losses, epoch, epoch_size, epoch_size_val, gen, genv
                     images = Variable(torch.from_numpy(images).type(torch.FloatTensor))
                     targets = [Variable(torch.from_numpy(ann).type(torch.FloatTensor)) for ann in targets]
 
-            optimizer.zero_grad()
+            optimizer.zero_grad()       # 把模型中参数的梯度设为0
             outputs = net(images)
             losses = []
             for i in range(3):
@@ -114,12 +115,11 @@ def fit_one_epoch(net, yolo_losses, epoch, epoch_size, epoch_size_val, gen, genv
     ))
 
 
-# 检测精度 mAP 和 pr 曲线计算参考视频 https://www.bilibili.com/video/BV1zE411u7Vw
 if __name__ == "__main__":
-    # 输入的 shape 大小, 显存比较小可以使用416x416，显存比较大可以使用608x608
+    # 输入的 shape 大小, 显存比较小可以使用 416x416，显存比较大可以使用 608x608
     input_shape = (416, 416)
 
-    # ricks的使用设置
+    # tricks的使用设置
     Cosine_lr = False
     mosaic = True
 
@@ -216,7 +216,7 @@ if __name__ == "__main__":
 
         for epoch in range(Init_Epoch, Freeze_Epoch):
             fit_one_epoch(net, yolo_losses, epoch, epoch_size, epoch_size_val, gen, gen_val, Freeze_Epoch, Cuda)
-            lr_scheduler.step()
+            lr_scheduler.step()     # step()方法来对所有的参数进行更新
 
     if True:
         lr = 1e-4

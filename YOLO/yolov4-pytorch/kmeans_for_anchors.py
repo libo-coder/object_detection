@@ -1,3 +1,8 @@
+# coding=utf-8
+"""
+运行该程序会计算 './VOCdevkit/VOC2007/Annotations' 的 xml, 会生成 yolo_anchors.txt
+@author: libo
+"""
 import numpy as np
 import xml.etree.ElementTree as ET
 import glob
@@ -15,40 +20,40 @@ def cas_iou(box, cluster):
 
     return iou
 
+
 def avg_iou(box, cluster):
     return np.mean([np.max(cas_iou(box[i], cluster)) for i in range(box.shape[0])])
 
 
-def kmeans(box,k):
+def kmeans(box, k):
     # 取出一共有多少框
     row = box.shape[0]
-    
+
     # 每个框各个点的位置
-    distance = np.empty((row,k))
-    
+    distance = np.empty((row, k))
+
     # 最后的聚类位置
     last_clu = np.zeros((row,))
 
     np.random.seed()
 
     # 随机选5个当聚类中心
-    cluster = box[np.random.choice(row,k,replace = False)]
+    cluster = box[np.random.choice(row, k, replace=False)]
     # cluster = random.sample(row, k)
     while True:
         # 计算每一行距离五个点的iou情况。
         for i in range(row):
-            distance[i] = 1 - cas_iou(box[i],cluster)
-        
+            distance[i] = 1 - cas_iou(box[i], cluster)
+
         # 取出最小点
-        near = np.argmin(distance,axis=1)
+        near = np.argmin(distance, axis=1)
 
         if (last_clu == near).all():
             break
-        
+
         # 求每一个类的中位点
         for j in range(k):
-            cluster[j] = np.median(
-                box[near == j],axis=0)
+            cluster[j] = np.median(box[near == j], axis=0)
 
         last_clu = near
 
@@ -74,12 +79,11 @@ def load_data(path):
             xmax = np.float64(xmax)
             ymax = np.float64(ymax)
             # 得到宽高
-            data.append([xmax-xmin,ymax-ymin])
+            data.append([xmax - xmin, ymax - ymin])
     return np.array(data)
 
 
 if __name__ == '__main__':
-    # 运行该程序会计算 './VOCdevkit/VOC2007/Annotations' 的 xml, 会生成yolo_anchors.txt
     SIZE = 416
     anchors_num = 9
     path = r'./VOCdevkit/VOC2007/Annotations'       # 载入数据集，可以使用VOC的xml

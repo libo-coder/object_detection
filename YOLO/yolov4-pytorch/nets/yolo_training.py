@@ -251,6 +251,7 @@ class YOLOLoss(nn.Module):
 
                 # 计算出所有先验框的位置
                 anchor_shapes = torch.FloatTensor(np.concatenate((np.zeros((self.num_anchors, 2)), np.array(anchors)), 1))
+
                 # 计算重合程度
                 anch_ious = bbox_iou(gt_box, anchor_shapes)
 
@@ -258,6 +259,7 @@ class YOLOLoss(nn.Module):
                 best_n = np.argmax(anch_ious)
                 if best_n not in anchor_index:
                     continue
+
                 # Masks
                 if (gj < in_h) and (gi < in_w):
                     best_n = best_n - subtract_index
