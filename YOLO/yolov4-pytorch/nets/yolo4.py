@@ -130,7 +130,6 @@ class YoloBody(nn.Module):
         final_out_filter0 = num_anchors * (5 + num_classes)
         self.yolo_head1 = yolo_head([1024, final_out_filter0], 512)
 
-
     def forward(self, x):
         """ P3, P4, P5 分别为 CSPDarkNet53 中的过程结果 """
         #  backbone
@@ -142,20 +141,20 @@ class YoloBody(nn.Module):
 
         P5_upsample = self.upsample1(P5)
         P4 = self.conv_for_P4(x1)
-        P4 = torch.cat([P4, P5_upsample], axis=1)
+        P4 = torch.cat([P4, P5_upsample], dim=1)        # axis=1
         P4 = self.make_five_conv1(P4)
 
         P4_upsample = self.upsample2(P4)
         P3 = self.conv_for_P3(x2)
-        P3 = torch.cat([P3, P4_upsample], axis=1)
+        P3 = torch.cat([P3, P4_upsample], dim=1)        # axis=1
         P3 = self.make_five_conv2(P3)
 
         P3_downsample = self.down_sample1(P3)
-        P4 = torch.cat([P3_downsample, P4], axis=1)
+        P4 = torch.cat([P3_downsample, P4], dim=1)      # axis=1
         P4 = self.make_five_conv3(P4)
 
         P4_downsample = self.down_sample2(P4)
-        P5 = torch.cat([P4_downsample, P5], axis=1)
+        P5 = torch.cat([P4_downsample, P5], dim=1)     # axis=1
         P5 = self.make_five_conv4(P5)
 
         out2 = self.yolo_head3(P3)

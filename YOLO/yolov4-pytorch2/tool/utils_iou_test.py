@@ -251,7 +251,7 @@ def bboxes_iou_test(bboxes_a, bboxes_b, fmt='voc', iou_type='iou'):
 
 def original_iou_test(bboxes_a, bboxes_b, xyxy=True):
     """
-    test function for the original iou function in `train.py`
+    test function for the original iou function in `train.py.back`
     """
     if bboxes_a.shape[1] != 4 or bboxes_b.shape[1] != 4:
         raise IndexError

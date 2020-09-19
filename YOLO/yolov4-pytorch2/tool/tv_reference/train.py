@@ -3,7 +3,7 @@ r"""PyTorch Detection Training.
 To run in a multi-gpu environment, use the distributed launcher::
 
     python -m torch.distributed.launch --nproc_per_node=$NGPU --use_env \
-        train.py ... --world-size $NGPU
+        train.py.back ... --world-size $NGPU
 
 The default hyperparameters are tuned for training on 8 gpus and 2 images per gpu.
     --lr 0.02 --batch-size 2 --world-size 8

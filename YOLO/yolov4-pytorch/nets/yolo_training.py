@@ -2,10 +2,6 @@
 """
 yolo_training: 训练用到的小技巧，Mosaic 数据增强，Label Smoothing 平滑，CIOU，学习率余弦退火衰减
 
-学习率余弦退火衰减：
-    1. 学习率会先上升再下降，这是退火优化法的思想。
-    2. 上升的时候使用线性上升，下降的时候模拟cos函数下降。执行多次。
-
 y_pre:
     1. 网络最后输出的内容就是三个特征层每个网格点对应的预测框及其种类，即三个特征层分别对应着图片被分为不同 size 的网格后，
        每个网格点上三个先验框对应的位置、置信度及其种类。
@@ -19,22 +15,6 @@ y_pre:
 y_true:
     1. y_true 就是一个真实图像中，它的每个真实框对应的(19,19)、(38,38)、(76,76)网格上的偏移位置、长宽与种类。
        其仍需要编码才能与 y_pred 的结构一致
-
-loss 的计算过程：
-    loss 值需要对三个特征层进行处理，这里以最小的特征层为例。
-    1. 利用 y_true 取出该特征层中真实存在目标的点的位置 (m,19,19,3,1) 及其对应的种类 (m,19,19,3,80)。
-    2. 将 prediction 的预测值输出进行处理，得到 reshape 后的预测值 y_pre，shape 为 (m,19,19,3,85)。还有解码后的xy，wh。
-    3. 对于每一幅图，计算其中所有真实框与预测框的IOU，如果某些预测框和真实框的重合程度大于0.5，则忽略。
-    4. 计算 ciou 作为回归的 loss，这里只计算正样本的 回归 loss。
-    5. 计算置信度的 loss，其有两部分构成：
-       第一部分是实际上存在目标的，预测结果中置信度的值与 1 对比；
-       第二部分是实际上不存在目标的，在第四步中得到其最大 IOU 的值与 0 对比。
-    6. 计算预测种类的 loss，其计算的是实际上存在目标的，预测类与真实类的差距。
-
-    其实际上计算的总的loss是三个loss的和，这三个loss分别是：
-    （1）实际存在的框，CIOU LOSS。
-    （2）实际存在的框，预测结果中置信度的值与1对比；实际不存在的框，预测结果中置信度的值与0对比，该部分要去除被忽略的不包含目标的框。
-    （3）实际存在的框，种类预测结果与实际结果的对比。
 
 @author: libo
 """
@@ -116,7 +96,8 @@ def box_ciou(b1, b2):
     iou = intersect_area / torch.clamp(union_area, min=1e-6)
 
     # 计算中心的差距
-    center_distance = torch.sum(torch.pow((b1_xy - b2_xy), 2), axis=-1)
+    # center_distance = torch.sum(torch.pow((b1_xy - b2_xy), 2), axis=-1)   # raw
+    center_distance = torch.sum(torch.pow((b1_xy - b2_xy), 2), -1)
 
     # 找到包裹两个框的最小框的左上角和右下角
     enclose_mins = torch.min(b1_mins, b2_mins)
@@ -124,7 +105,8 @@ def box_ciou(b1, b2):
     enclose_wh = torch.max(enclose_maxes - enclose_mins, torch.zeros_like(intersect_maxes))
 
     # 计算对角线距离
-    enclose_diagonal = torch.sum(torch.pow(enclose_wh, 2), axis=-1)
+    # enclose_diagonal = torch.sum(torch.pow(enclose_wh, 2), axis=-1)       # raw
+    enclose_diagonal = torch.sum(torch.pow(enclose_wh, 2), -1)
     ciou = iou - 1.0 * center_distance / torch.clamp(enclose_diagonal, min=1e-6)
 
     ### 修改: libo
@@ -217,8 +199,13 @@ class YOLOLoss(nn.Module):
             t_box = t_box.cuda()
 
         box_loss_scale = 2 - box_loss_scale_x * box_loss_scale_y
+
         #  losses.
-        ciou = (1 - box_ciou(pred_boxes_for_ciou[mask.bool()], t_box[mask.bool()])) * box_loss_scale[mask.bool()]
+        # ciou = (1 - box_ciou(pred_boxes_for_ciou[mask.bool()], t_box[mask.bool()])) * box_loss_scale[mask.bool()]     # raw
+        #### 修改
+        # equla_flag = torch.Tensor(0).cuda
+        equla_flag = torch.Tensor(0)
+        ciou = (1 - box_ciou(pred_boxes_for_ciou[torch.equal(mask, equla_flag)], t_box[torch.equal(mask, equla_flag)])) * box_loss_scale[torch.equal(mask, equla_flag)]
 
         loss_loc = torch.sum(ciou / bs)
         loss_conf = torch.sum(BCELoss(conf, mask) * mask / bs) + torch.sum(BCELoss(conf, mask) * noobj_mask / bs)

@@ -10,7 +10,7 @@ import torch
 from torch.autograd import Variable
 import torch.nn as nn
 import torch.optim as optim
-# import torch.nn.functional as F
+import torch.nn.functional as F
 import torch.backends.cudnn as cudnn
 from torch.utils.data import DataLoader
 from utils.dataloader import yolo_dataset_collate, YoloDataset
@@ -26,7 +26,6 @@ def get_classes(classes_path):
     class_names = [c.strip() for c in class_names]
     return class_names
 
-
 def get_anchors(anchors_path):
     """ loads the anchors from a file """
     with open(anchors_path) as f:
@@ -34,11 +33,9 @@ def get_anchors(anchors_path):
     anchors = [float(x) for x in anchors.split(',')]
     return np.array(anchors).reshape([-1, 3, 2])[::-1, :, :]
 
-
 def get_lr(optimizer):
     for param_group in optimizer.param_groups:
         return param_group['lr']
-
 
 def fit_one_epoch(net, yolo_losses, epoch, epoch_size, epoch_size_val, gen, genval, Epoch, cuda):
     total_loss = 0
@@ -125,7 +122,9 @@ if __name__ == "__main__":
     Use_Data_Loader = True      # Dataloder的使用
 
     annotation_path = '2007_train.txt'
-    # 获得先验框和类
+    #-------------------------------#
+    #   获得先验框和类
+    #-------------------------------#
     anchors_path = 'model_data/yolo_anchors.txt'
     classes_path = 'model_data/voc_classes.txt'   
     class_names = get_classes(classes_path)

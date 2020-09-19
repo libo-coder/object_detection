@@ -158,7 +158,7 @@ class ModelEMA:
     process, or after the training stops converging.
     This class is sensitive where it is initialized in the sequence of model init,
     GPU assignment and distributed training wrappers.
-    I've tested with the sequence in my own train.py for torch.DataParallel, apex.DDP, and single-GPU.
+    I've tested with the sequence in my own train.py.back for torch.DataParallel, apex.DDP, and single-GPU.
     """
 
     def __init__(self, model, decay=0.9999, device=''):
