@@ -6,13 +6,12 @@ import operator
 import sys
 import argparse
 import math
-
 import numpy as np
 #----------------------------------------------------#
 #   用于计算mAP
 #   代码克隆自https://github.com/Cartucho/mAP
 #----------------------------------------------------#
-MINOVERLAP = 0.5 # default value (defined in the PASCAL VOC2012 challenge)
+MINOVERLAP = 0.5    # default value (defined in the PASCAL VOC2012 challenge)
 
 parser = argparse.ArgumentParser()
 parser.add_argument('-na', '--no-animation', help="no animation is shown.", action="store_true")
@@ -111,7 +110,7 @@ def log_average_miss_rate(precision, fp_cumsum, num_images):
     mr_tmp = np.insert(mr, 0, 1.0)
 
     # Use 9 evenly spaced reference points in log-space
-    ref = np.logspace(-2.0, 0.0, num = 9)
+    ref = np.logspace(-2.0, 0.0, num=9)
     for i, ref_i in enumerate(ref):
         # np.where() will always find at least 1 index, since min(ref) = 0.01 and min(fppi_tmp) = -1.0
         j = np.where(fppi_tmp <= ref_i)[-1][-1]
@@ -144,8 +143,7 @@ def is_float_between_0_and_1(value):
 
 """
  Calculate the AP given the recall and precision array
-    1st) We compute a version of the measured precision/recall curve with
-         precision monotonically decreasing
+    1st) We compute a version of the measured precision/recall curve with precision monotonically decreasing
     2nd) We compute the AP as the area under this curve by numerical integration.
 """
 def voc_ap(rec, prec):
@@ -159,15 +157,14 @@ def voc_ap(rec, prec):
     i=find(mrec(2:end)~=mrec(1:end-1))+1;
     ap=sum((mrec(i)-mrec(i-1)).*mpre(i));
     """
-    rec.insert(0, 0.0) # insert 0.0 at begining of list
-    rec.append(1.0) # insert 1.0 at end of list
+    rec.insert(0, 0.0)  # insert 0.0 at begining of list
+    rec.append(1.0)     # insert 1.0 at end of list
     mrec = rec[:]
-    prec.insert(0, 0.0) # insert 0.0 at begining of list
-    prec.append(0.0) # insert 0.0 at end of list
+    prec.insert(0, 0.0)     # insert 0.0 at begining of list
+    prec.append(0.0)        # insert 0.0 at end of list
     mpre = prec[:]
     """
-     This part makes the precision monotonically decreasing
-        (goes from the end to the beginning)
+     This part makes the precision monotonically decreasing (goes from the end to the beginning)
         matlab: for i=numel(mpre)-1:-1:1
                     mpre(i)=max(mpre(i),mpre(i+1));
     """
@@ -177,6 +174,7 @@ def voc_ap(rec, prec):
     #     range(start=(len(mpre) - 2), end=-1, step=-1)
     for i in range(len(mpre)-2, -1, -1):
         mpre[i] = max(mpre[i], mpre[i+1])
+
     """
      This part creates a list of indexes where the recall changes
         matlab: i=find(mrec(2:end)~=mrec(1:end-1))+1;
@@ -184,10 +182,10 @@ def voc_ap(rec, prec):
     i_list = []
     for i in range(1, len(mrec)):
         if mrec[i] != mrec[i-1]:
-            i_list.append(i) # if it was matlab would be i + 1
+            i_list.append(i)    # if it was matlab would be i + 1
+
     """
-     The Average Precision (AP) is the area under the curve
-        (numerical integration)
+     The Average Precision (AP) is the area under the curve (numerical integration)
         matlab: ap=sum((mrec(i)-mrec(i-1)).*mpre(i));
     """
     ap = 0.0
@@ -311,12 +309,9 @@ def draw_plot_func(dictionary, n_classes, window_title, plot_title, x_label, out
     plt.xlabel(x_label, fontsize='large')
     # adjust size of window
     fig.tight_layout()
-    # save the plot
     fig.savefig(output_path)
-    # show image
     if to_show:
         plt.show()
-    # close the plot
     plt.close()
 
 """ Create a ".temp_files/" and "results/" director """

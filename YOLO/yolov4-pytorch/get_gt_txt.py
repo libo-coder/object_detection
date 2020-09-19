@@ -1,8 +1,8 @@
-#-------------------------------------#
-#       mAP所需文件计算代码
-#       具体教程请查看Bilibili
-#       Bubbliiiing
-#-------------------------------------#
+# coding=utf-8
+"""
+mAP 所需文件计算代码, 具体教程请查看 Bilibili  Bubbliiiing
+@author: libo
+"""
 import sys
 import os
 import glob
@@ -16,12 +16,12 @@ if not os.path.exists("./input/ground-truth"):
     os.makedirs("./input/ground-truth")
 
 for image_id in image_ids:
-    with open("./input/ground-truth/"+image_id+".txt", "w") as new_f:
-        root = ET.parse("VOCdevkit/VOC2007/Annotations/"+image_id+".xml").getroot()
+    with open("./input/ground-truth/" + image_id + ".txt", "w") as new_f:
+        root = ET.parse("VOCdevkit/VOC2007/Annotations/" + image_id + ".xml").getroot()
         for obj in root.findall('object'):
-            if obj.find('difficult')!=None:
+            if obj.find('difficult') != None:
                 difficult = obj.find('difficult').text
-                if int(difficult)==1:
+                if int(difficult) == 1:
                     continue
             obj_name = obj.find('name').text
             bndbox = obj.find('bndbox')
@@ -30,4 +30,5 @@ for image_id in image_ids:
             right = bndbox.find('xmax').text
             bottom = bndbox.find('ymax').text
             new_f.write("%s %s %s %s %s\n" % (obj_name, left, top, right, bottom))
+
 print("Conversion completed!")
