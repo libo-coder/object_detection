@@ -120,6 +120,7 @@ class YoloBody(nn.Module):
         self.down_sample1 = conv2d(128, 256, 3, stride=2)
         self.make_five_conv3 = make_five_conv([256, 512], 512)
         # 3*(5+num_classes)=3*(5+20)=3*(4+1+20)=75
+        # 5+num_classes = 4+1+num_classes
         final_out_filter1 = num_anchors * (5 + num_classes)
         self.yolo_head2 = yolo_head([512, final_out_filter1], 256)
 

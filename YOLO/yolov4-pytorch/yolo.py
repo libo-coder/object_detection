@@ -18,12 +18,12 @@ from utils.utils import non_max_suppression, bbox_iou, DecodeBox, letterbox_imag
 class YOLO(object):
     """
     使用自己训练好的模型预测需要修改 2 个参数
-    model_path 和 classes_path 都需要修改！
-    model_path 对应 logs 文件夹下面的权值文件，classes_path 是 model_path 对应分的类。
+    1. model_path: 对应 logs 文件夹下面的权值文件
+    2. classes_path: 对应 model_path 分的类
     """
     _defaults = {
         # "model_path": 'model_data/yolo4_weights.pth',
-        "model_path": '/Users/user/Documents/work/yolo_model/yolov4-pytorch/yolo4_weights.pth',
+        "model_path": 'E:/project/yolo_mode/yolov4-pytorch/yolo4_weights.pth',
         "anchors_path": 'model_data/yolo_anchors.txt',
         "classes_path": 'model_data/coco_classes.txt',
         # "model_image_size": (416, 416, 3),
@@ -114,7 +114,7 @@ class YOLO(object):
             outputs = self.net(images)
 
         output_list = []
-        for i in range(3):
+        for i in range(3):      # YOLO的解码每一次只能解码一个，所以需要循环3次分别进行解码
             output_list.append(self.yolo_decodes[i](outputs[i]))
         output = torch.cat(output_list, 1)
 
